@@ -12,7 +12,7 @@ const Tarefa = require('../models/tarefa')
 const Usuario = require('./models/usuario')
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/routes_usuario');
 
 var app = express();
 
