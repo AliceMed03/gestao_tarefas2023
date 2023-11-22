@@ -46,7 +46,7 @@ router.get('/usuario/:id', async (req, res) => {
 router.post('/usuario', async (req, res) => {
   sequelize.query(`INSERT INTO tarefas (username, email, senha) 
                   VALUES (?, ?, ?)`,
-      { replacements: [req.body.description, new Date(), new Date()] }
+      { replacements: [req.body.username, req.body.email, req.body.senha] }
   )
   .then(([results, metadata]) => {
       res.status(201).json({
