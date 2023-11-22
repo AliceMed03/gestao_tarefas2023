@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 dotenv.config(); // pega todas as configurações do .env
 
 //criando a constante sequelize e passando as informações
-const sequelize = 
+const db = 
     new Sequelize(
         process.env.DB_NAME, 
         process.env.DB_USER, 
@@ -14,4 +14,5 @@ const sequelize =
             dialect: 'mysql'
         });
 
-module.exports = sequelize;
+module.exports = db;
+

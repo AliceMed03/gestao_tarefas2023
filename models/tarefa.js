@@ -1,39 +1,41 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('sqlite::memory:');
+const db = require('../sequelize.js');
+const Sequelize = require('sequelize');
 
-const Tarefa = sequelize.define('Tarefa', {
+const Tarefa = db.define('Tarefa', {
   // Model attributes are defined here
   id: {
-    type: DataTypes.INTEGER,
+    type: Sequelize.INTEGER,
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
   },
   titulo: {
-    type: DataTypes.STRING,
+    type: Sequelize.STRING,
     allowNull: false,
   },
   descricao: {
-    type: DataTypes.STRING,
+    type: Sequelize.STRING,
     allowNull: false,
   },
   status: {
-    type: DataTypes.STRING,
+    type: Sequelize.STRING,
     allowNull: false,
   },
   data_criacao: {
-    type: DataTypes.DATE,
+    type: Sequelize.DATE,
     allowNull: false,
   },
   data_limite: {
-    type: DataTypes.DATE,
+    type: Sequelize.DATE,
     allowNull: false,
   }
 }, {
 
 });
 
-module.exports = Tarefa
+Tarefa.sync();
+
+module.exports = Tarefa;
 
 // `sequelize.define` also returns the model
 //console.log(User === sequelize.models.User); // true

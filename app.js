@@ -5,14 +5,15 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 //import do sequelize
 const { Sequelize } = require('sequelize');
-const sequelize = require('./db')
+const sequelize = require('./sequelize')
 
 //Models imprtações
-const Tarefa = require('../models/tarefa')
+const Tarefa = require('./models/tarefa');
 const Usuario = require('./models/usuario')
+sequelize.sync();  
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/routes_usuario');
+var usuarioRouter = require('./routes/routes_usuario');
+var tarefaRouter = require('./routes/routes_tarefa');
 
 var app = express();
 
@@ -26,8 +27,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/usuario', usuarioRouter);
+app.use('/tarefa', tarefaRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

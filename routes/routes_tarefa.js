@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Tarefa = require('./models/tarefa');
-const sequelize = require('./sequelize');
+const Tarefa = require('../models/tarefa');
+const sequelize = require('../sequelize');
 
 //GET Retorna tarefas com paginação e ordenação
 router.get('/tarefa', async (req, res) => {
@@ -109,4 +109,4 @@ router.delete('/tarefa/:id', async (req, res) => {
   });
 });
 
-module.exports = router;
+module.exports = Tarefa;
