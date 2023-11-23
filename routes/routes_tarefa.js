@@ -3,6 +3,8 @@ const router = express.Router();
 const Tarefa = require('../models/tarefa');
 const sequelize = require('../sequelize');
 
+Tarefa.sync()
+
 //GET Retorna tarefas com paginação e ordenação
 router.get('/tarefa', async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
@@ -63,8 +65,8 @@ router.post('/tarefa', async (req, res) => {
 
 //PUT Atualiza uma tarefa pelo ID
 router.put('/tarefa/:id', async (req, res) => {
-  sequelize.query(`UPDATE tarefas SET description = ? WHERE id = ?`,
-      { replacements: [req.body.description, req.params.id] }
+  sequelize.query(`UPDATE tarefas SET descricao = ? WHERE id = ?`,
+      { replacements: [req.body.descricao, req.params.id] }
   )
   .then(([results, metadata]) => {
       if (metadata.affectedRows === 0) {
@@ -109,4 +111,4 @@ router.delete('/tarefa/:id', async (req, res) => {
   });
 });
 
-module.exports = Tarefa;
+module.exports = router;

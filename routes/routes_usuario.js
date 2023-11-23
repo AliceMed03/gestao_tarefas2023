@@ -3,10 +3,12 @@ const router = express.Router();
 const Usuario = require('../models/usuario');
 const sequelize = require('../sequelize');
 
+Usuario.sync()
+
 //GET Retorna usuarios com paginação e ordenação
 router.get('/usuario', async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
-  sequelize.query(`SELECT * FROM usuario ORDER BY updatedAt DESC LIMIT ? OFFSET ?`,
+  sequelize.query(`SELECT * FROM usuarios`,
       { replacements: [parseInt(limit), (page - 1) * parseInt(limit)] }
   )
   .then(([results, metadata]) => {
@@ -21,12 +23,12 @@ router.get('/usuario', async (req, res) => {
 
 //GET Consulta um usuario pelo ID
 router.get('/usuario/:id', async (req, res) => {
-  sequelize.query(`SELECT * FROM usuario WHERE id = ?`, { replacements: [req.params.id] })
+  sequelize.query(`SELECT * FROM usuarios WHERE id = ?`, { replacements: [req.params.id] })
   .then(([results, metadata]) => {
       if (results.length === 0) {
           res.status(404).json({
               success: false,
-              message: "usuario não encontrada",
+              message: "Usuário não encontrada",
           });
       } else {
           res.json({
@@ -44,14 +46,13 @@ router.get('/usuario/:id', async (req, res) => {
 
 //POST Cria uma tarefa
 router.post('/usuario', async (req, res) => {
-  sequelize.query(`INSERT INTO tarefas (username, email, senha) 
-                  VALUES (?, ?, ?)`,
+  sequelize.query(`INSERT INTO usuarios (username, email, senha) VALUES (?, ?, ?)`,
       { replacements: [req.body.username, req.body.email, req.body.senha] }
   )
   .then(([results, metadata]) => {
       res.status(201).json({
           success: true,
-          message: "Tarefa criada com sucesso",
+          message: "Usuário criado com sucesso",
       });
   }).catch((error) => {
       res.status(500).json({
@@ -62,20 +63,20 @@ router.post('/usuario', async (req, res) => {
 });
 
 //PUT Atualiza uma tarefa pelo ID
-router.put('/tarefa/:id', async (req, res) => {
-  sequelize.query(`UPDATE tarefas SET description = ? WHERE id = ?`,
-      { replacements: [req.body.description, req.params.id] }
+router.put('/usuario/:id', async (req, res) => {
+  sequelize.query(`UPDATE usuarios SET username = ? WHERE id = ?`,
+      { replacements: [req.body.username, req.params.id] }
   )
   .then(([results, metadata]) => {
       if (metadata.affectedRows === 0) {
           res.status(404).json({
               success: false,
-              message: "tarefa não encontrada",
+              message: "Usuário não encontrado",
           });
       } else {
           res.json({
               success: true,
-              message: "Tarefa atualizada com sucesso",
+              message: "Usuário atualizado com sucesso",
           });
       }
   }).catch((error) => {
@@ -93,12 +94,12 @@ router.delete('/usuario/:id', async (req, res) => {
       if (metadata.affectedRows === 0) {
           res.status(404).json({
               success: false,
-              message: "usuario não encontrado",
+              message: "Usuário não encontrado",
           });
       } else {
           res.json({
               success: true,
-              message: "usuario deletado com sucesso",
+              message: "Usuário deletado com sucesso",
           });
       }
   }).catch((error) => {
@@ -109,4 +110,4 @@ router.delete('/usuario/:id', async (req, res) => {
   });
 });
 
-module.exports = Usuario;
+module.exports = router;
