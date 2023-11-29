@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
 });
 
 //PUT Atualiza uma tarefa pelo ID
-router.put('/tarefa/:id', async(req, res) => {
+router.put('/:id', async(req, res) => {
     const id = req.params.id; //pega o id enviado pela requisição
     const { status } = req.body; //campo a ser alterado
     try{
@@ -59,7 +59,7 @@ router.put('/tarefa/:id', async(req, res) => {
 });
 
 //DELETE Deleta uma tarefa pelo ID
-router.delete('/tarefa/:id', async(req, res) => {
+router.delete('/:id', async(req, res) => {
     const {id} = req.params; //pega o id enviado pela requisição para ser excluído
     try{
         await sequelize.query("DELETE FROM tarefas WHERE id = ?", { replacements: [id], type: QueryTypes.DELETE });
