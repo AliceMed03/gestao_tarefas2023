@@ -1,7 +1,7 @@
 const db = require('../sequelize.js');
 const Sequelize = require('sequelize');
 
-const Tarefa = db.define('Tarefa', {
+const Tarefa = db.define('tarefas', {
   // Model attributes are defined here
   id: {
     type: Sequelize.INTEGER,

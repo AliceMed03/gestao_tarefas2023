@@ -1,114 +1,72 @@
 const express = require('express');
 const router = express.Router();
-const Tarefa = require('../models/tarefa');
+const { QueryTypes } = require('sequelize');
 const sequelize = require('../sequelize');
+const Tarefa = require('../models/tarefa');
 
-Tarefa.sync()
-
-//GET Retorna tarefas com paginação e ordenação
-router.get('/tarefa', async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
-  sequelize.query(`SELECT * FROM tarefas ORDER BY updatedAt DESC LIMIT ? OFFSET ?`,
-      { replacements: [parseInt(limit), (page - 1) * parseInt(limit)] }
-  )
-  .then(([results, metadata]) => {
-      res.json(results);
-  }).catch((error) => {
-      res.status(500).json({
-          success: false,
-          message: error.message,
-      });
-  });
-});
-
-//GET Consulta uma tarefa pelo ID
-router.get('/tarefa/:id', async (req, res) => {
-  sequelize.query(`SELECT * FROM tarefas WHERE id = ?`, { replacements: [req.params.id] })
-  .then(([results, metadata]) => {
-      if (results.length === 0) {
-          res.status(404).json({
-              success: false,
-              message: "tarefa não encontrada",
-          });
-      } else {
-          res.json({
-              success: true,
-              task: results[0],
-          });
-      }
-  }).catch((error) => {
-      res.status(500).json({
-          success: false,
-          message: error.message,
-      });
-  });
-});
+sequelize.sync()
 
 //POST Cria uma tarefa
-router.post('/tarefa', async (req, res) => {
-  sequelize.query(`INSERT INTO tarefas (titulo, descricao, status, data_criacao, data_limite) 
-                  VALUES (?, ?, ?, ?, ?)`,
-      { replacements: [req.body.titulo, req.body.descricao, req.body.status, new Date(), new Date()] }
-  )
-  .then(([results, metadata]) => {
-      res.status(201).json({
-          success: true,
-          message: "Tarefa criada com sucesso",
-      });
-  }).catch((error) => {
-      res.status(500).json({
-          success: false,
-          message: error.message,
-      });
-  });
+router.post('/', async (req, res) => {
+    try {
+        const query = `INSERT INTO tarefas (titulo, descricao, status, data_criacao, data_limite) VALUES (?, ?, ?, ?, ?)`;
+        const replacements = [req.body.titulo, req.body.descricao, req.body.status, new Date(), new Date()];
+
+        const [results, metadata] = await sequelize.query(query, { replacements });
+
+        res.status(201).json({
+            success: true,
+            message: "Tarefa criada com sucesso",
+            results: results,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+});
+
+// GET para listar todas as tarefas
+router.get('/', async (req, res) => {
+    try {
+        const query = "SELECT * FROM tarefas";
+        const results = await sequelize.query(query, { type: QueryTypes.SELECT });
+
+        res.json({
+            success: true,
+            tarefas: results,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
 });
 
 //PUT Atualiza uma tarefa pelo ID
-router.put('/tarefa/:id', async (req, res) => {
-  sequelize.query(`UPDATE tarefas SET descricao = ? WHERE id = ?`,
-      { replacements: [req.body.descricao, req.params.id] }
-  )
-  .then(([results, metadata]) => {
-      if (metadata.affectedRows === 0) {
-          res.status(404).json({
-              success: false,
-              message: "tarefa não encontrada",
-          });
-      } else {
-          res.json({
-              success: true,
-              message: "Tarefa atualizada com sucesso",
-          });
-      }
-  }).catch((error) => {
-      res.status(500).json({
-          success: false,
-          message: error.message,
-      });
-  });
+router.put('/tarefa/:id', async(req, res) => {
+    const id = req.params.id; //pega o id enviado pela requisição
+    const { status } = req.body; //campo a ser alterado
+    try{
+        //altera o campo preco, no registro onde o id coincidir com o id enviado
+        await sequelize.query("UPDATE tarefas SET status = ? WHERE id = ?", { replacements: [status, id], type: QueryTypes.UPDATE });
+        res.status(200).json({ message: 'Status atualizado com sucesso.' }); //statusCode indica ok no update
+    }catch(error){
+        res.status(400).json({msg:error.message}); //retorna status de erro e mensagens
+    }
 });
 
 //DELETE Deleta uma tarefa pelo ID
-router.delete('/tarefa/:id', async (req, res) => {
-  sequelize.query(`DELETE FROM tarefas WHERE id = ?`, { replacements: [req.params.id] })
-  .then(([results, metadata]) => {
-      if (metadata.affectedRows === 0) {
-          res.status(404).json({
-              success: false,
-              message: "tarefa não encontrada",
-          });
-      } else {
-          res.json({
-              success: true,
-              message: "Tarefa deletada com sucesso",
-          });
-      }
-  }).catch((error) => {
-      res.status(500).json({
-          success: false,
-          message: error.message,
-      });
-  });
+router.delete('/tarefa/:id', async(req, res) => {
+    const {id} = req.params; //pega o id enviado pela requisição para ser excluído
+    try{
+        await sequelize.query("DELETE FROM tarefas WHERE id = ?", { replacements: [id], type: QueryTypes.DELETE });
+        res.status(200).json({ message: 'Tarefa deletada com sucesso.' }); //statusCode indica ok no delete
+    }catch(error){
+        res.status(400).json({msg:error.message}); //retorna status de erro e mensagens
+    }
 });
 
 module.exports = router;
