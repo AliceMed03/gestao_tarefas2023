@@ -1,8 +1,10 @@
+// Importando a instância do Sequelize configurada
 const db = require('../sequelize.js');
 const Sequelize = require('sequelize');
 
+// Definindo o modelo de dados para a entidade "Tarefa"
 const Tarefa = db.define('tarefas', {
-  // Model attributes are defined here
+  // Atributos do modelo são definidos aqui
   id: {
     type: Sequelize.INTEGER,
     allowNull: false,
@@ -33,9 +35,11 @@ const Tarefa = db.define('tarefas', {
 
 });
 
+// Sincronizando o modelo com o banco de dados
 Tarefa.sync();
 
+// Exportando o modelo para ser utilizado em outros módulos
 module.exports = Tarefa;
 
-// `sequelize.define` also returns the model
+// `sequelize.define` também retorna o modelo
 //console.log(User === sequelize.models.User); // true

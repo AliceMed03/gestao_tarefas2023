@@ -1,18 +1,19 @@
-//import do sequelize
+// Importando o Sequelize para interagir com o banco de dados
 const { Sequelize } = require('sequelize');
+
+// Importando a biblioteca dotenv para lidar com variáveis de ambiente
 const dotenv = require('dotenv');
-dotenv.config(); // pega todas as configurações do .env
+dotenv.config(); // Carregando as configurações do arquivo .env
 
-//criando a constante sequelize e passando as informações
-const db = 
-    new Sequelize(
-        process.env.DB_NAME, 
-        process.env.DB_USER, 
-        process.env.DB_PASSWORD, 
-        {
-            host: process.env.DB_HOST,
-            dialect: 'mysql'
-        });
+// Criando a instância do Sequelize e configurando com as informações do banco de dados
+const db = new Sequelize(
+    process.env.DB_NAME,     // Nome do banco de dados
+    process.env.DB_USER,     // Nome do usuário do banco de dados
+    process.env.DB_PASSWORD, // Senha do usuário do banco de dados
+    {
+        host: process.env.DB_HOST, // Endereço do servidor do banco de dados
+        dialect: 'mysql'           // Dialeto do banco de dados (neste caso, MySQL)
+    });
 
+// Exportando a instância do Sequelize configurada para ser utilizada em outros módulos
 module.exports = db;
-
