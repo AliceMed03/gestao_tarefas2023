@@ -9,6 +9,9 @@ app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
+const Tarefa = require('./models/tarefa');
+const Usuario = require('./models/tarefa');
+
 var usuarioRouter = require('./routes/routes_usuario');
 var tarefaRouter = require('./routes/routes_tarefa');
 
