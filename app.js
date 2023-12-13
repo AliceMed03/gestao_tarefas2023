@@ -23,10 +23,12 @@ const Usuario = require('./models/usuario');
 // Importando roteadores para as entidades "usuario" e "tarefa"
 var usuarioRouter = require('./routes/routes_usuario');
 var tarefaRouter = require('./routes/routes_tarefa');
+var loginRouter = require('./routes/login');
 
 // Definindo as rotas para os roteadores importados
 app.use('/usuario', usuarioRouter);
 app.use('/tarefa', tarefaRouter);
+app.use('/login', loginRouter);
 
 // Iniciando o servidor na porta especificada
 app.listen(PORT, () => {

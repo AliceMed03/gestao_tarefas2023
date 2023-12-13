@@ -4,6 +4,7 @@ const router = express.Router();
 const { QueryTypes } = require('sequelize');
 const sequelize = require('../sequelize'); // Importando a instância do Sequelize configurada
 const Usuario = require('../models/usuario'); // Importando o modelo de dados de usuário
+const bcrypt = require('bcrypt');
 
 // Sincronizando o modelo com o banco de dados
 sequelize.sync();
@@ -11,27 +12,25 @@ sequelize.sync();
 // Rota POST para criar um novo usuário
 router.post('/', async (req, res) => {
     try {
-        // Construindo a consulta SQL para inserção de um novo usuário
-        const query = `INSERT INTO usuarios (username, email, senha) VALUES (?, ?, ?)`;
-        const replacements = [req.body.username, req.body.email, req.body.senha];
-
-        // Executando a consulta e obtendo os resultados
-        const [results, metadata] = await sequelize.query(query, { replacements });
-
-        // Retornando uma resposta de sucesso
+        // Encriptar a senha
+        const senhaEncriptada = await bcrypt.hash(req.body.senha, 10); // 10 é o número de rounds para gerar o salt
+    sequelize.query(`INSERT INTO usuarios (username, email, senha, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`, 
+    
+        { replacements: [req.body.username, req.body.email, senhaEncriptada,new Date(), new Date() ] }
+    )
+    
         res.status(201).json({
             success: true,
-            message: "Usuário criado com sucesso",
-            results: results,
+            message: "usuario criado com sucesso",
         });
-    } catch (error) {
-        // Retornando uma resposta de erro em caso de falha
+    }catch(error){
         res.status(500).json({
             success: false,
             message: error.message,
         });
     }
 });
+
 
 // Rota GET para listar todos os usuários
 router.get('/', async (req, res) => {
@@ -53,6 +52,30 @@ router.get('/', async (req, res) => {
         });
     }
 });
+
+//GET Consulta uma tarefa pelo ID
+router.get('/:id', async (req, res) => {
+    sequelize.query(`SELECT * FROM usuarios WHERE id = ${req.params.id}`)
+    .then(([results, metadata]) => {
+        if(results.length === 0){
+            res.status(404).json({
+                sucess: false,
+                message:"usuario não encontrada",
+            });
+        }else{
+            res.json({
+                sucess: true,
+                Tarefa: results[0],
+            });
+        }
+    }).catch((error) => {
+        res.status(500).json({
+            sucess: false,
+            message: error.message,
+        });
+    });
+});
+
 
 // Rota PUT para atualizar um usuário pelo ID
 router.put('/:id', async(req, res) => {

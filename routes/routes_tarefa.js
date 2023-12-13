@@ -54,26 +54,29 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Rota GET para listar todas as tarefas, mas com filtro
-router.get('/filtro/:palavra', async (req, res) => {
-    try {
-        // Construindo a consulta SQL para selecionar todas as tarefas
-        const palavra = req.query.palavra;
-        const query = (`SELECT * FROM tarefas where titulo LIKE '%${palavra}%'`);
-        const results = await sequelize.query(query, { type: QueryTypes.SELECT });
-
-        // Retornando os resultados obtidos
-        res.json({
-            success: true,
-            tarefas: results,
-        });
-    } catch (error) {
-        // Retornando uma resposta de erro em caso de falha
+//Filtro por titulo
+router.get("/filtro/:palavra", async(req,res)=> {
+    const palavra = req.params.palavra; // palavra ou titulo a pesquisar
+    sequelize.query(`SELECT * FROM tarefas WHERE titulo LIKE '%${palavra}%'`)
+    .then(([results, metadata]) => {
+        if (results.length === 0) {
+            res.status(404).json({
+                success: false,
+                message: "Tarefa não encontrada",
+            });
+        } else {
+            res.json({
+                success: true,
+                tarefa: results,
+            });
+        }
+    })
+    .catch((error) => {
         res.status(500).json({
             success: false,
-            message: error.message,
+            message: `Erro ao obter a tarefa: ${error.message}`,
         });
-    }
+    });
 });
 
 // Rota PUT para atualizar uma tarefa pelo ID
